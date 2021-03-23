@@ -2,6 +2,10 @@
 
 Spawn an RC boat you can control with the arrow keys.
 
+## Example
+
+[![Example](https://i.imgur.com/qtwOcDZm.jpg)](https://imgur.com/qtwOcDZ)
+
 ## Requirements
 
 - [uiprompt](https://github.com/kibook/redm-uiprompt) library
