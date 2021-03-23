@@ -2,7 +2,7 @@ local RCBoat
 local Driver
 local Camera
 
-RegisterNetEvent("rcboat:fireTorpedo")
+RegisterNetEvent("rcboat:torpedoFired")
 
 function PrepareSoundset(soundsetName, p1)
 	return Citizen.InvokeNative(0xD9130842D7226045, soundsetName, p1)
@@ -165,7 +165,7 @@ function FireTorpedo(prompt)
 	PlaySound("RCKPT1_Sounds", "TORPEDO_FIRE", rcboatCoords)
 
 	NetworkRegisterEntityAsNetworked(torpedo)
-	TriggerServerEvent("rcboat:fireTorpedo", ObjToNet(torpedo))
+	TriggerServerEvent("rcboat:torpedoFired", ObjToNet(torpedo))
 
 	Citizen.CreateThread(function()
 		local text = prompt:getText()
@@ -277,7 +277,7 @@ AddEventHandler("onResourceStop", function(resourceName)
 	end
 end)
 
-AddEventHandler("rcboat:fireTorpedo", function(netId)
+AddEventHandler("rcboat:torpedoFired", function(netId)
 	UseParticleFxAsset("scr_crackpot")
 	StartParticleFxLoopedOnEntity("scr_crackpot_torpedo_spray", NetToObj(netId), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, false, false, false)
 end)

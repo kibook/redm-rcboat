@@ -1,5 +1,5 @@
-RegisterNetEvent("rcboat:fireTorpedo")
+RegisterNetEvent("rcboat:torpedoFired")
 
-AddEventHandler("rcboat:fireTorpedo", function(netId)
-	TriggerClientEvent("rcboat:fireTorpedo", -1, netId)
+AddEventHandler("rcboat:torpedoFired", function(netId)
+	TriggerClientEvent("rcboat:torpedoFired", -1, netId)
 end)
