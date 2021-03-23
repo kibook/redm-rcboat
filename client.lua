@@ -243,7 +243,8 @@ function SelfDestruct(prompt)
 			Citizen.Wait(1000)
 		end
 
-		AddExplosion(GetEntityCoords(RCBoat) - vector3(0, 0, 0.5), 23, Config.TorpedoDamage, true, false, 1.0)
+		AddExplosion(GetEntityCoords(RCBoat) - vector3(0, 0, 0.5), 23, Config.SelfDestructDamage, true, false, 1.0)
+		SetEntityHealth(RCBoat, 0)
 
 		SelfDestructPrompts:setText(text)
 		SelfDestructPrompts:setEnabled(true)

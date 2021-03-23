@@ -26,3 +26,6 @@ Config.TorpedoCooldown = 5
 
 -- The time in seconds before self-destructing
 Config.SelfDestructTime = 5
+
+-- The damage scale of the explosion from self-destructing
+Config.SelfDestructDamage = 0.5
