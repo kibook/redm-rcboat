@@ -16,6 +16,10 @@ function RemoveSoundset(soundsetName)
 	return Citizen.InvokeNative(0x531A78D6BF27014B, soundsetName)
 end
 
+function IsUsingKeyboard(padIndex)
+	return Citizen.InvokeNative(0xA571D46727E2B718, padIndex)
+end
+
 function LoadModel(model)
 	if not IsModelInCdimage(model) then
 		return false
@@ -106,60 +110,39 @@ function ToggleCamera()
 	end
 end
 
-local RCBoatPrompts = UipromptGroup:new("RC Boat")
-
-local AcceleratePrompt = RCBoatPrompts:addPrompt(`INPUT_FRONTEND_UP`, "Accelerate")
-AcceleratePrompt:setOnControlPressed(function()
+function Accelerate(prompt)
 	TaskVehicleTempAction(Driver, RCBoat, 9, 1)
-end)
-AcceleratePrompt:setOnControlJustReleased(function()
-	TaskVehicleTempAction(Driver, RCBoat, 6, 2500)
-end)
+end
 
-local ReversePrompt = RCBoatPrompts:addPrompt(`INPUT_FRONTEND_DOWN`, "Reverse")
-ReversePrompt:setOnControlPressed(function()
+function Deaccelerate(prompt)
+	TaskVehicleTempAction(Driver, RCBoat, 6, 2500)
+end
+
+function Reverse(prompt)
 	TaskVehicleTempAction(Driver, RCBoat, 28, 1)
-end)
-ReversePrompt:setOnControlJustReleased(function()
-	TaskVehicleTempAction(Driver, RCBoat, 6, 2500)
-end)
+end
 
-local TurnLeftPrompt = RCBoatPrompts:addPrompt(`INPUT_FRONTEND_LEFT`, "Turn Left")
-TurnLeftPrompt:setOnControlPressed(function()
-	if AcceleratePrompt:isControlPressed() then
+function TurnLeft(prompt)
+	if prompt.acceleratePrompt:isControlPressed() then
 		TaskVehicleTempAction(Driver, RCBoat, 7, 1)
-	elseif ReversePrompt:isControlPressed() then
+	elseif prompt.reversePrompt:isControlPressed() then
 		TaskVehicleTempAction(Driver, RCBoat, 13, 1)
 	else
 		TaskVehicleTempAction(Driver, RCBoat, 4, 1)
 	end
-end)
+end
 
-local TurnRightPrompt = RCBoatPrompts:addPrompt(`INPUT_FRONTEND_RIGHT`, "Turn Right")
-TurnRightPrompt:setOnControlPressed(function()
-	if AcceleratePrompt:isControlPressed() then
+function TurnRight(prompt)
+	if prompt.acceleratePrompt:isControlPressed() then
 		TaskVehicleTempAction(Driver, RCBoat, 8, 1)
-	elseif ReversePrompt:isControlPressed() then
+	elseif prompt.reversePrompt:isControlPressed() then
 		TaskVehicleTempAction(Driver, RCBoat, 14, 1)
 	else
 		TaskVehicleTempAction(Driver, RCBoat, 5, 1)
 	end
-end)
+end
 
-local ToggleCameraPrompt = RCBoatPrompts:addPrompt(`INPUT_FRONTEND_ACCEPT`, "Toggle Camera")
-ToggleCameraPrompt:setHoldMode(true)
-ToggleCameraPrompt:setOnHoldModeJustCompleted(function()
-	ToggleCamera()
-end)
-
-local StowPrompt = RCBoatPrompts:addPrompt(`INPUT_FRONTEND_CANCEL`, "Stow")
-StowPrompt:setHoldMode(true)
-StowPrompt:setOnHoldModeJustCompleted(function()
-	StowRCBoat()
-end)
-
-local TorpedoPrompt = RCBoatPrompts:addPrompt(`INPUT_GAME_MENU_EXTRA_OPTION`, "Fire Torpedo")
-TorpedoPrompt:setOnControlJustReleased(function(prompt)
+function FireTorpedo(prompt)
 	prompt:setEnabled(false)
 
 	local rcboatCoords = GetEntityCoords(RCBoat)
@@ -214,7 +197,71 @@ TorpedoPrompt:setOnControlJustReleased(function(prompt)
 		prompt:setText(text)
 		prompt:setEnabled(true)
 	end)
-end)
+end
+
+-- Primary controls
+local RCBoatPrompts = UipromptGroup:new("RC Boat")
+
+local AcceleratePrompt = RCBoatPrompts:addPrompt(`INPUT_FRONTEND_UP`, "Accelerate")
+AcceleratePrompt:setOnControlPressed(Accelerate)
+AcceleratePrompt:setOnControlJustReleased(Deaccelerate)
+
+local ReversePrompt = RCBoatPrompts:addPrompt(`INPUT_FRONTEND_DOWN`, "Reverse")
+ReversePrompt:setOnControlPressed(Reverse)
+ReversePrompt:setOnControlJustReleased(Deaccelerate)
+
+local TurnLeftPrompt = RCBoatPrompts:addPrompt(`INPUT_FRONTEND_LEFT`, "Turn Left")
+TurnLeftPrompt:setOnControlPressed(TurnLeft)
+TurnLeftPrompt.acceleratePrompt = AcceleratePrompt
+TurnLeftPrompt.reversePrompt = ReversePrompt
+
+local TurnRightPrompt = RCBoatPrompts:addPrompt(`INPUT_FRONTEND_RIGHT`, "Turn Right")
+TurnRightPrompt:setOnControlPressed(TurnRight)
+TurnRightPrompt.acceleratePrompt = AcceleratePrompt
+TurnRightPrompt.reversePrompt = ReversePrompt
+
+local ToggleCameraPrompt = RCBoatPrompts:addPrompt(`INPUT_FRONTEND_ACCEPT`, "Toggle Camera")
+ToggleCameraPrompt:setHoldMode(true)
+ToggleCameraPrompt:setOnHoldModeJustCompleted(ToggleCamera)
+
+local StowPrompt = RCBoatPrompts:addPrompt(`INPUT_FRONTEND_CANCEL`, "Stow")
+StowPrompt:setHoldMode(true)
+StowPrompt:setOnHoldModeJustCompleted(StowRCBoat)
+
+local TorpedoPrompt = RCBoatPrompts:addPrompt(`INPUT_GAME_MENU_EXTRA_OPTION`, "Fire Torpedo")
+TorpedoPrompt:setOnControlJustReleased(FireTorpedo)
+
+-- Alternate controls for controllers that avoids left D-pad
+local AltRCBoatPrompts = UipromptGroup:new("RC Boat")
+
+local AltAcceleratePrompt = AltRCBoatPrompts:addPrompt(`INPUT_FRONTEND_UP`, "Accelerate")
+AltAcceleratePrompt:setOnControlPressed(Accelerate)
+AltAcceleratePrompt:setOnControlJustReleased(Deaccelerate)
+
+local AltReversePrompt = AltRCBoatPrompts:addPrompt(`INPUT_FRONTEND_DOWN`, "Reverse")
+AltReversePrompt:setOnControlPressed(Reverse)
+AltReversePrompt:setOnControlJustReleased(Deaccelerate)
+
+local AltTurnLeftPrompt = AltRCBoatPrompts:addPrompt(`INPUT_FRONTEND_LB`, "Turn Left")
+AltTurnLeftPrompt:setOnControlPressed(TurnLeft)
+AltTurnLeftPrompt.acceleratePrompt = AltAcceleratePrompt
+AltTurnLeftPrompt.reversePrompt = AltReversePrompt
+
+local AltTurnRightPrompt = AltRCBoatPrompts:addPrompt(`INPUT_FRONTEND_RB`, "Turn Right")
+AltTurnRightPrompt:setOnControlPressed(TurnRight)
+AltTurnRightPrompt.acceleratePrompt = AltAcceleratePrompt
+AltTurnRightPrompt.reversePrompt = AltReversePrompt
+
+local AltToggleCameraPrompt = AltRCBoatPrompts:addPrompt(`INPUT_FRONTEND_ACCEPT`, "Toggle Camera")
+AltToggleCameraPrompt:setHoldMode(true)
+AltToggleCameraPrompt:setOnHoldModeJustCompleted(ToggleCamera)
+
+local AltStowPrompt = AltRCBoatPrompts:addPrompt(`INPUT_FRONTEND_CANCEL`, "Stow")
+AltStowPrompt:setHoldMode(true)
+AltStowPrompt:setOnHoldModeJustCompleted(StowRCBoat)
+
+local AltTorpedoPrompt = AltRCBoatPrompts:addPrompt(`INPUT_GAME_MENU_EXTRA_OPTION`, "Fire Torpedo")
+AltTorpedoPrompt:setOnControlJustReleased(FireTorpedo)
 
 RegisterCommand("rcboat", function(source, args, raw)
 	if RCBoat then
@@ -242,7 +289,11 @@ end)
 Citizen.CreateThread(function()
 	while true do
 		if RCBoat then
-			RCBoatPrompts:handleEvents()
+			if IsUsingKeyboard(0) then
+				RCBoatPrompts:handleEvents()
+			else
+				AltRCBoatPrompts:handleEvents()
+			end
 
 			if Camera then
 				SetCamRot(Camera, GetEntityRotation(RCBoat))
