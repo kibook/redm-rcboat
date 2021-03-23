@@ -1,0 +1,22 @@
+Config = {}
+
+-- Model of the RC boat to spawn
+Config.RCBoatModel = `rcBoat`
+
+-- Model used for the invisible driver of the RC boat
+Config.DriverModel = `S_M_M_StGSailor_01`
+
+-- Model used for torpedos fired from the RC boat
+Config.TorpedoModel = `s_re_toytorpedo01x`
+
+-- How fast torpedos travels when fired
+Config.TorpedoSpeed = 20.0
+
+-- How far torpedos can go without hitting anything before detonating
+Config.TorpedoRange = 30.0
+
+-- The damage scale of the explosion from a detonated torpedo
+Config.TorpedoDamage = 0.5
+
+-- The time in seconds before another torpedo can be fired after one detonates
+Config.TorpedoCooldown = 5
