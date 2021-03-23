@@ -23,3 +23,6 @@ Config.TorpedoDamage = 0.5
 
 -- The time in seconds before another torpedo can be fired after one detonates
 Config.TorpedoCooldown = 5
+
+-- The time in seconds before self-destructing
+Config.SelfDestructTime = 5

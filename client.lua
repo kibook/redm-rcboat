@@ -144,8 +144,38 @@ function TurnRight(prompt)
 	end
 end
 
+-- Two or more prompts that perform the same function
+local AltPrompts = {}
+
+function AltPrompts:new(prompts)
+	self.__index = self
+	local self = setmetatable({}, self)
+
+	self.prompts = prompts or {}
+
+	return self
+end
+
+function AltPrompts:addPrompt(prompt)
+	table.insert(self.prompts, prompt)
+end
+
+function AltPrompts:setEnabled(toggle)
+	for _, prompt in ipairs(self.prompts) do
+		prompt:setEnabled(toggle)
+	end
+end
+
+function AltPrompts:setText(text)
+	for _, prompt in ipairs(self.prompts) do
+		prompt:setText(text)
+	end
+end
+
+local TorpedoPrompts = AltPrompts:new()
+
 function FireTorpedo(prompt)
-	prompt:setEnabled(false)
+	TorpedoPrompts:setEnabled(false)
 
 	local rcboatCoords = GetEntityCoords(RCBoat)
 	local heading = GetEntityHeading(RCBoat)
@@ -181,21 +211,42 @@ function FireTorpedo(prompt)
 				torpedo = nil
 			else
 				SetEntityVelocity(torpedo, velocity)
-				prompt:setText(text .. " (" .. range .. "m)")
+
+				TorpedoPrompts:setText(text .. " (" .. range .. "m)")
 			end
 
 			Citizen.Wait(0)
 		end
 
 		for secs = Config.TorpedoCooldown, 1, -1 do
-			prompt:setText(text .. " (" .. secs .. "s)")
+			TorpedoPrompts:setText(text .. " (" .. secs .. "s)")
 			Citizen.Wait(1000)
 		end
 
 		TriggerServerEvent("rcboat:torpedoReloaded", GetEntityCoords(RCBoat))
 
-		prompt:setText(text)
-		prompt:setEnabled(true)
+		TorpedoPrompts:setText(text)
+		TorpedoPrompts:setEnabled(true)
+	end)
+end
+
+local SelfDestructPrompts = AltPrompts:new()
+
+function SelfDestruct(prompt)
+	SelfDestructPrompts:setEnabled(false)
+
+	Citizen.CreateThread(function()
+		local text = prompt:getText()
+
+		for secs = Config.SelfDestructTime, 1, -1 do
+			SelfDestructPrompts:setText("~COLOR_RED~" .. text .. " in " .. secs .. "s")
+			Citizen.Wait(1000)
+		end
+
+		AddExplosion(GetEntityCoords(RCBoat) - vector3(0, 0, 0.5), 23, Config.TorpedoDamage, true, false, 1.0)
+
+		SelfDestructPrompts:setText(text)
+		SelfDestructPrompts:setEnabled(true)
 	end)
 end
 
@@ -224,12 +275,14 @@ local ToggleCameraPrompt = RCBoatPrompts:addPrompt(`INPUT_FRONTEND_ACCEPT`, "Tog
 ToggleCameraPrompt:setHoldMode(true)
 ToggleCameraPrompt:setOnHoldModeJustCompleted(ToggleCamera)
 
-local StowPrompt = RCBoatPrompts:addPrompt(`INPUT_FRONTEND_CANCEL`, "Stow")
-StowPrompt:setHoldMode(true)
-StowPrompt:setOnHoldModeJustCompleted(StowRCBoat)
-
 local TorpedoPrompt = RCBoatPrompts:addPrompt(`INPUT_GAME_MENU_EXTRA_OPTION`, "Fire Torpedo")
 TorpedoPrompt:setOnControlJustReleased(FireTorpedo)
+TorpedoPrompts:addPrompt(TorpedoPrompt)
+
+local SelfDestructPrompt = RCBoatPrompts:addPrompt(`INPUT_FRONTEND_CANCEL`, "Self-destruct")
+SelfDestructPrompt:setHoldMode(true)
+SelfDestructPrompt:setOnHoldModeJustCompleted(SelfDestruct)
+SelfDestructPrompts:addPrompt(SelfDestructPrompt)
 
 -- Alternate controls for controllers that avoids left D-pad
 local AltRCBoatPrompts = UipromptGroup:new("RC Boat")
@@ -256,12 +309,14 @@ local AltToggleCameraPrompt = AltRCBoatPrompts:addPrompt(`INPUT_FRONTEND_ACCEPT`
 AltToggleCameraPrompt:setHoldMode(true)
 AltToggleCameraPrompt:setOnHoldModeJustCompleted(ToggleCamera)
 
-local AltStowPrompt = AltRCBoatPrompts:addPrompt(`INPUT_FRONTEND_CANCEL`, "Stow")
-AltStowPrompt:setHoldMode(true)
-AltStowPrompt:setOnHoldModeJustCompleted(StowRCBoat)
-
 local AltTorpedoPrompt = AltRCBoatPrompts:addPrompt(`INPUT_GAME_MENU_EXTRA_OPTION`, "Fire Torpedo")
 AltTorpedoPrompt:setOnControlJustReleased(FireTorpedo)
+TorpedoPrompts:addPrompt(AltTorpedoPrompt)
+
+local AltSelfDestructPrompt = AltRCBoatPrompts:addPrompt(`INPUT_FRONTEND_CANCEL`, "Self-destruct")
+AltSelfDestructPrompt:setHoldMode(true)
+AltSelfDestructPrompt:setOnHoldModeJustCompleted(SelfDestruct)
+SelfDestructPrompts:addPrompt(AltSelfDestructPrompt)
 
 RegisterCommand("rcboat", function(source, args, raw)
 	if RCBoat then
