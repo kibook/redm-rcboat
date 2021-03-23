@@ -9,6 +9,9 @@ Config.DriverModel = `S_M_M_StGSailor_01`
 -- Model used for torpedos fired from the RC boat
 Config.TorpedoModel = `s_re_toytorpedo01x`
 
+-- Range at which the RC boat can be controlled
+Config.ControlRange = 200.0
+
 -- How fast torpedos travels when fired
 Config.TorpedoSpeed = 20.0
 

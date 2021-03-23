@@ -3,6 +3,8 @@ local Driver
 local Camera
 
 RegisterNetEvent("rcboat:torpedoFired")
+RegisterNetEvent("rcboat:torpedoReloaded")
+RegisterNetEvent("rcboat:boatSunk")
 
 function PrepareSoundset(soundsetName, p1)
 	return Citizen.InvokeNative(0xD9130842D7226045, soundsetName, p1)
@@ -78,7 +80,7 @@ function PlaySound(set, name, coords)
 			Citizen.Wait(0)
 		end
 
-		PlaySoundFromPosition(name, coords, set, true, 0, true, 0)
+		PlaySoundFromPosition(name, coords, set, false, 0, true, 0)
 
 		Citizen.Wait(2000)
 
@@ -162,10 +164,8 @@ function FireTorpedo(prompt)
 	local velocity = vector3(Config.TorpedoSpeed * math.sin(r), Config.TorpedoSpeed * math.cos(r), 0.0)
 	SetEntityVelocity(torpedo, velocity)
 
-	PlaySound("RCKPT1_Sounds", "TORPEDO_FIRE", rcboatCoords)
-
 	NetworkRegisterEntityAsNetworked(torpedo)
-	TriggerServerEvent("rcboat:torpedoFired", ObjToNet(torpedo))
+	TriggerServerEvent("rcboat:torpedoFired", rcboatCoords, ObjToNet(torpedo))
 
 	Citizen.CreateThread(function()
 		local text = prompt:getText()
@@ -192,7 +192,7 @@ function FireTorpedo(prompt)
 			Citizen.Wait(1000)
 		end
 
-		PlaySound("RCKPT1_Sounds", "BOAT_RELOAD", GetEntityCoords(RCBoat))
+		TriggerServerEvent("rcboat:torpedoReloaded", GetEntityCoords(RCBoat))
 
 		prompt:setText(text)
 		prompt:setEnabled(true)
@@ -277,9 +277,18 @@ AddEventHandler("onResourceStop", function(resourceName)
 	end
 end)
 
-AddEventHandler("rcboat:torpedoFired", function(netId)
+AddEventHandler("rcboat:torpedoFired", function(rcBoatCoords, torpedoNetId)
+	PlaySound("RCKPT1_Sounds", "TORPEDO_FIRE", rcBoatCoords)
 	UseParticleFxAsset("scr_crackpot")
-	StartParticleFxLoopedOnEntity("scr_crackpot_torpedo_spray", NetToObj(netId), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, false, false, false)
+	StartParticleFxLoopedOnEntity("scr_crackpot_torpedo_spray", NetToObj(torpedoNetId), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, false, false, false)
+end)
+
+AddEventHandler("rcboat:torpedoReloaded", function(rcBoatCoords)
+	PlaySound("RCKPT1_Sounds", "BOAT_RELOAD", rcBoatCoords)
+end)
+
+AddEventHandler("rcboat:boatSunk", function(rcBoatCoords)
+	PlaySound("RCKPT1_Sounds", "BOAT_SINKS", rcBoatCoords)
 end)
 
 Citizen.CreateThread(function()
@@ -308,11 +317,27 @@ Citizen.CreateThread(function()
 	while true do
 		if RCBoat then
 			local playerPed = PlayerPedId()
+			local playerCoords = GetEntityCoords(playerPed)
+			local rcBoatCoords = GetEntityCoords(RCBoat)
+			local distance = #(playerCoords - rcBoatCoords)
+			local rcBoatHealth = GetEntityHealth(RCBoat)
 
-			if GetEntityHealth(RCBoat) == 0 or IsPedDeadOrDying(playerPed) then
-				PlaySound("RCKPT1_Sounds", "BOAT_SINKS", GetEntityCoords(RCBoat))
+			if rcBoatHealth == 0 or IsPedDeadOrDying(playerPed) or distance > Config.ControlRange then
+				TriggerServerEvent("rcboat:boatSunk", rcBoatCoords)
 				StowRCBoat()
 			end
+
+			local colour
+
+			if distance > Config.ControlRange - 10 then
+				colour = "~COLOR_RED~"
+			elseif distance > Config.ControlRange - 20 then
+				colour = "~COLOR_YELLOW~"
+			else
+				colour = "~COLOR_WHITE~"
+			end
+
+			RCBoatPrompts:setText("RC Boat - " .. rcBoatHealth .. " HP (" .. colour .. math.floor(distance) .. "m~COLOR_WHITE~)")
 		end
 
 		Citizen.Wait(500)
