@@ -331,6 +331,8 @@ AltSelfDestructPrompt:setHoldMode(true)
 AltSelfDestructPrompt:setOnHoldModeJustCompleted(SelfDestruct)
 SelfDestructPrompts:addPrompt(AltSelfDestructPrompt)
 
+local RCBoatPromptGroups = AltPrompts:new{RCBoatPrompts, AltRCBoatPrompts}
+
 RegisterCommand("rcboat", function(source, args, raw)
 	if RCBoat then
 		StowRCBoat()
@@ -407,7 +409,7 @@ Citizen.CreateThread(function()
 				colour = "~COLOR_WHITE~"
 			end
 
-			RCBoatPrompts:setText("RC Boat - " .. rcBoatHealth .. " HP (" .. colour .. math.floor(distance) .. "m~COLOR_WHITE~)")
+			RCBoatPromptGroups:setText("RC Boat - " .. rcBoatHealth .. " HP (" .. colour .. math.floor(distance) .. "m~COLOR_WHITE~)")
 		end
 
 		Citizen.Wait(500)
