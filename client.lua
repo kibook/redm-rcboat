@@ -22,6 +22,10 @@ function IsUsingKeyboard(padIndex)
 	return Citizen.InvokeNative(0xA571D46727E2B718, padIndex)
 end
 
+function BlipAddForEntity(blipHash, entity)
+	return Citizen.InvokeNative(0x23F74C2FDA6E7C61, blipHash, entity)
+end
+
 function LoadModel(model)
 	if not IsModelInCdimage(model) then
 		return false
@@ -49,6 +53,10 @@ function CreateRCBoat()
 	local rcboat = CreateVehicle(Config.RCBoatModel, spawnPos, playerYaw, true, false, false, false)
 
 	SetModelAsNoLongerNeeded(Config.RCBoatModel)
+
+	if Config.RCBoatBlip then
+		BlipAddForEntity(Config.RCBoatBlip, rcboat)
+	end
 
 	return rcboat
 end

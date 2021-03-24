@@ -9,6 +9,9 @@ Config.DriverModel = `S_M_M_StGSailor_01`
 -- Model used for torpedos fired from the RC boat
 Config.TorpedoModel = `s_re_toytorpedo01x`
 
+-- Minimap blip sprite to use for the RC boat
+Config.RCBoatBlip = -214162151
+
 -- Range at which the RC boat can be controlled
 Config.ControlRange = 100.0
 
