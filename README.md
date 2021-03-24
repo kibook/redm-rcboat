@@ -4,7 +4,7 @@ Spawn an RC boat you can control with the arrow keys.
 
 ## Example
 
-[![Example](https://i.imgur.com/qtwOcDZm.jpg)](https://imgur.com/qtwOcDZ)
+[![Example](https://i.imgur.com/LEfV6hom.jpg)](https://imgur.com/LEfV6ho)
 
 ## Requirements
 
