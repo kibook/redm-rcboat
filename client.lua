@@ -230,6 +230,11 @@ function FireTorpedo(prompt)
 	end)
 end
 
+function ExplodeRCBoat()
+	AddExplosion(GetEntityCoords(RCBoat) - vector3(0, 0, 0.5), 23, Config.SelfDestructDamage, true, false, 1.0)
+	SetEntityHealth(RCBoat, 0)
+end
+
 local SelfDestructPrompts = AltPrompts:new()
 
 function SelfDestruct(prompt)
@@ -243,8 +248,7 @@ function SelfDestruct(prompt)
 			Citizen.Wait(1000)
 		end
 
-		AddExplosion(GetEntityCoords(RCBoat) - vector3(0, 0, 0.5), 23, Config.SelfDestructDamage, true, false, 1.0)
-		SetEntityHealth(RCBoat, 0)
+		ExplodeRCBoat()
 
 		SelfDestructPrompts:setText(text)
 		SelfDestructPrompts:setEnabled(true)
@@ -378,9 +382,11 @@ Citizen.CreateThread(function()
 			local distance = #(playerCoords - rcBoatCoords)
 			local rcBoatHealth = GetEntityHealth(RCBoat)
 
-			if rcBoatHealth == 0 or IsPedDeadOrDying(playerPed) or distance > Config.ControlRange then
+			if rcBoatHealth == 0 then
 				TriggerServerEvent("rcboat:boatSunk", rcBoatCoords)
 				StowRCBoat()
+			elseif IsPedDeadOrDying(playerPed) or distance > Config.ControlRange then
+				ExplodeRCBoat()
 			end
 
 			local colour
