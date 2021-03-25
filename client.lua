@@ -392,6 +392,10 @@ Citizen.CreateThread(function()
 			local distance = #(playerCoords - rcBoatCoords)
 			local rcBoatHealth = GetEntityHealth(RCBoat)
 
+			if not DoesEntityExist(Driver) then
+				Driver = CreateDriver()
+			end
+
 			if rcBoatHealth == 0 then
 				TriggerServerEvent("rcboat:boatSunk", rcBoatCoords)
 				StowRCBoat()
