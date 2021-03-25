@@ -266,33 +266,33 @@ end
 -- Primary controls
 local RCBoatPrompts = UipromptGroup:new("RC Boat")
 
-local AcceleratePrompt = RCBoatPrompts:addPrompt(`INPUT_FRONTEND_UP`, "Accelerate")
+local AcceleratePrompt = Uiprompt:new(`INPUT_FRONTEND_UP`, "Accelerate", RCBoatPrompts)
 AcceleratePrompt:setOnControlPressed(Accelerate)
 AcceleratePrompt:setOnControlJustReleased(Deaccelerate)
 
-local ReversePrompt = RCBoatPrompts:addPrompt(`INPUT_FRONTEND_DOWN`, "Reverse")
+local ReversePrompt = Uiprompt:new(`INPUT_FRONTEND_DOWN`, "Reverse", RCBoatPrompts)
 ReversePrompt:setOnControlPressed(Reverse)
 ReversePrompt:setOnControlJustReleased(Deaccelerate)
 
-local TurnLeftPrompt = RCBoatPrompts:addPrompt(`INPUT_FRONTEND_LEFT`, "Turn Left")
+local TurnLeftPrompt = Uiprompt:new(`INPUT_FRONTEND_LEFT`, "Turn Left", RCBoatPrompts)
 TurnLeftPrompt:setOnControlPressed(TurnLeft)
 TurnLeftPrompt.acceleratePrompt = AcceleratePrompt
 TurnLeftPrompt.reversePrompt = ReversePrompt
 
-local TurnRightPrompt = RCBoatPrompts:addPrompt(`INPUT_FRONTEND_RIGHT`, "Turn Right")
+local TurnRightPrompt = Uiprompt:new(`INPUT_FRONTEND_RIGHT`, "Turn Right", RCBoatPrompts)
 TurnRightPrompt:setOnControlPressed(TurnRight)
 TurnRightPrompt.acceleratePrompt = AcceleratePrompt
 TurnRightPrompt.reversePrompt = ReversePrompt
 
-local ToggleCameraPrompt = RCBoatPrompts:addPrompt(`INPUT_FRONTEND_ACCEPT`, "Toggle Camera")
+local ToggleCameraPrompt = Uiprompt:new(`INPUT_FRONTEND_ACCEPT`, "Toggle Camera", RCBoatPrompts)
 ToggleCameraPrompt:setHoldMode(true)
 ToggleCameraPrompt:setOnHoldModeJustCompleted(ToggleCamera)
 
-local TorpedoPrompt = RCBoatPrompts:addPrompt(`INPUT_GAME_MENU_EXTRA_OPTION`, "Fire Torpedo")
+local TorpedoPrompt = Uiprompt:new(`INPUT_GAME_MENU_EXTRA_OPTION`, "Fire Torpedo", RCBoatPrompts)
 TorpedoPrompt:setOnControlJustReleased(FireTorpedo)
 TorpedoPrompts:addPrompt(TorpedoPrompt)
 
-local SelfDestructPrompt = RCBoatPrompts:addPrompt(`INPUT_FRONTEND_CANCEL`, "Self-destruct")
+local SelfDestructPrompt = Uiprompt:new(`INPUT_FRONTEND_CANCEL`, "Self-destruct", RCBoatPrompts)
 SelfDestructPrompt:setHoldMode(true)
 SelfDestructPrompt:setOnHoldModeJustCompleted(SelfDestruct)
 SelfDestructPrompts:addPrompt(SelfDestructPrompt)
@@ -300,33 +300,33 @@ SelfDestructPrompts:addPrompt(SelfDestructPrompt)
 -- Alternate controls for controllers that avoids left D-pad
 local AltRCBoatPrompts = UipromptGroup:new("RC Boat")
 
-local AltAcceleratePrompt = AltRCBoatPrompts:addPrompt(`INPUT_FRONTEND_UP`, "Accelerate")
+local AltAcceleratePrompt = Uiprompt:new(`INPUT_FRONTEND_UP`, "Accelerate", AltRCBoatPrompts)
 AltAcceleratePrompt:setOnControlPressed(Accelerate)
 AltAcceleratePrompt:setOnControlJustReleased(Deaccelerate)
 
-local AltReversePrompt = AltRCBoatPrompts:addPrompt(`INPUT_FRONTEND_DOWN`, "Reverse")
+local AltReversePrompt = Uiprompt:new(`INPUT_FRONTEND_DOWN`, "Reverse", AltRCBoatPrompts)
 AltReversePrompt:setOnControlPressed(Reverse)
 AltReversePrompt:setOnControlJustReleased(Deaccelerate)
 
-local AltTurnLeftPrompt = AltRCBoatPrompts:addPrompt(`INPUT_FRONTEND_LB`, "Turn Left")
+local AltTurnLeftPrompt = Uiprompt:new(`INPUT_FRONTEND_LB`, "Turn Left", AltRCBoatPrompts)
 AltTurnLeftPrompt:setOnControlPressed(TurnLeft)
 AltTurnLeftPrompt.acceleratePrompt = AltAcceleratePrompt
 AltTurnLeftPrompt.reversePrompt = AltReversePrompt
 
-local AltTurnRightPrompt = AltRCBoatPrompts:addPrompt(`INPUT_FRONTEND_RB`, "Turn Right")
+local AltTurnRightPrompt = Uiprompt:new(`INPUT_FRONTEND_RB`, "Turn Right", AltRCBoatPrompts)
 AltTurnRightPrompt:setOnControlPressed(TurnRight)
 AltTurnRightPrompt.acceleratePrompt = AltAcceleratePrompt
 AltTurnRightPrompt.reversePrompt = AltReversePrompt
 
-local AltToggleCameraPrompt = AltRCBoatPrompts:addPrompt(`INPUT_FRONTEND_ACCEPT`, "Toggle Camera")
+local AltToggleCameraPrompt = Uiprompt:new(`INPUT_FRONTEND_ACCEPT`, "Toggle Camera", AltRCBoatPrompts)
 AltToggleCameraPrompt:setHoldMode(true)
 AltToggleCameraPrompt:setOnHoldModeJustCompleted(ToggleCamera)
 
-local AltTorpedoPrompt = AltRCBoatPrompts:addPrompt(`INPUT_GAME_MENU_EXTRA_OPTION`, "Fire Torpedo")
+local AltTorpedoPrompt = Uiprompt:new(`INPUT_GAME_MENU_EXTRA_OPTION`, "Fire Torpedo", AltRCBoatPrompts)
 AltTorpedoPrompt:setOnControlJustReleased(FireTorpedo)
 TorpedoPrompts:addPrompt(AltTorpedoPrompt)
 
-local AltSelfDestructPrompt = AltRCBoatPrompts:addPrompt(`INPUT_FRONTEND_CANCEL`, "Self-destruct")
+local AltSelfDestructPrompt = Uiprompt:new(`INPUT_FRONTEND_CANCEL`, "Self-destruct", AltRCBoatPrompts)
 AltSelfDestructPrompt:setHoldMode(true)
 AltSelfDestructPrompt:setOnHoldModeJustCompleted(SelfDestruct)
 SelfDestructPrompts:addPrompt(AltSelfDestructPrompt)
