@@ -9,6 +9,7 @@ Spawn an RC boat you can control with the arrow keys.
 ## Requirements
 
 - [uiprompt](https://github.com/kibook/redm-uiprompt) library
+- [uifeed](https://github.com/kibook/redm-uifeed) library
 
 ## Install
 

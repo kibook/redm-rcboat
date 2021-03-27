@@ -13,7 +13,16 @@ Config.TorpedoModel = `s_re_toytorpedo01x`
 Config.RCBoatBlip = -214162151
 
 -- Range at which the RC boat can be controlled
-Config.ControlRange = 100.0
+Config.ControlRange = 40.0
+
+-- Remaining range at which the distance turns yellow
+Config.CautionRange = 10.0
+
+-- Remaining range at which the distance turns red
+Config.WarningRange = 5.0
+
+-- Message shown when getting too far away
+Config.RangeNotification = "Stay ~COLOR_YELLOW~within range~COLOR_WHITE~, or the RC boat will ~COLOR_RED~self-destruct~COLOR_WHITE~."
 
 -- How fast torpedos travels when fired
 Config.TorpedoSpeed = 20.0

@@ -73,6 +73,8 @@ function CreateDriver()
 	FreezeEntityPosition(driver, true)
 	SetBlockingOfNonTemporaryEvents(driver, true)
 	SetPedFleeAttributes(driver, 0, false)
+	SetPedCanBeTargetted(driver, false)
+	SetPedCanBeKnockedOffVehicle(driver, false)
 
 	return driver
 end
@@ -113,10 +115,12 @@ function ToggleCamera()
 		RenderScriptCams(false, true, 500, true, true)
 		DestroyCam(Camera)
 		Camera = nil
+		SetFocusEntity(PlayerPedId())
 	else
 		Camera = CreateCam("DEFAULT_SCRIPTED_CAMERA", true)
 		AttachCamToEntity(Camera, RCBoat, 0.0, -1.0, 0.4, true)
 		RenderScriptCams(true, true, 500, true, true)
+		SetFocusEntity(RCBoat)
 	end
 end
 
@@ -403,6 +407,8 @@ Citizen.CreateThread(function()
 end)
 
 Citizen.CreateThread(function()
+	local cautionShown = false
+
 	while true do
 		if RCBoat then
 			local playerPed = PlayerPedId()
@@ -424,12 +430,19 @@ Citizen.CreateThread(function()
 
 			local colour
 
-			if distance > Config.ControlRange - 10 then
+			if distance > Config.ControlRange - Config.WarningRange then
 				colour = "~COLOR_RED~"
-			elseif distance > Config.ControlRange - 20 then
+			elseif distance > Config.ControlRange - Config.CautionRange then
 				colour = "~COLOR_YELLOW~"
+
+				if not cautionShown then
+					exports.uifeed:showObjective(Config.RangeNotification, 5000)
+					cautionShown = true
+				end
 			else
 				colour = "~COLOR_WHITE~"
+
+				cautionShown = false
 			end
 
 			RCBoatPromptGroups:setText("RC Boat - " .. rcBoatHealth .. " HP (" .. colour .. math.floor(distance) .. "m~COLOR_WHITE~)")
