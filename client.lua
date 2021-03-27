@@ -203,7 +203,10 @@ function FireTorpedo(prompt)
 	SetEntityVelocity(torpedo, velocity)
 
 	NetworkRegisterEntityAsNetworked(torpedo)
-	TriggerServerEvent("rcboat:torpedoFired", rcboatCoords, ObjToNet(torpedo))
+
+	if NetworkGetEntityIsNetworked(torpedo) then
+		TriggerServerEvent("rcboat:torpedoFired", rcboatCoords, ObjToNet(torpedo))
+	end
 
 	Citizen.CreateThread(function()
 		local text = prompt:getText()
@@ -349,8 +352,11 @@ end)
 
 AddEventHandler("rcboat:torpedoFired", function(rcBoatCoords, torpedoNetId)
 	PlaySound("RCKPT1_Sounds", "TORPEDO_FIRE", rcBoatCoords)
-	UseParticleFxAsset("scr_crackpot")
-	StartParticleFxLoopedOnEntity("scr_crackpot_torpedo_spray", NetToObj(torpedoNetId), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, false, false, false)
+
+	if NetworkDoesNetworkIdExist(torpedoNetId) then
+		UseParticleFxAsset("scr_crackpot")
+		StartParticleFxLoopedOnEntity("scr_crackpot_torpedo_spray", NetToObj(torpedoNetId), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, false, false, false)
+	end
 end)
 
 AddEventHandler("rcboat:torpedoReloaded", function(rcBoatCoords)
