@@ -381,7 +381,20 @@ Citizen.CreateThread(function()
 			end
 
 			if Camera then
-				SetCamRot(Camera, GetEntityRotation(RCBoat))
+				if IsControlJustPressed(0, `INPUT_LOOK_BEHIND`) then
+					AttachCamToEntity(Camera, RCBoat, 0.0, 1.0, 0.4, true)
+				end
+
+				if IsControlJustReleased(0, `INPUT_LOOK_BEHIND`) then
+					AttachCamToEntity(Camera, RCBoat, 0.0, -1.0, 0.4, true)
+				end
+
+				if IsControlPressed(0, `INPUT_LOOK_BEHIND`) then
+					SetCamRot(Camera, GetEntityRotation(RCBoat) + vector3(0, 0, 180))
+				else
+					SetCamRot(Camera, GetEntityRotation(RCBoat))
+				end
+
 			end
 		end
 
