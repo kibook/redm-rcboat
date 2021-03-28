@@ -115,12 +115,10 @@ function ToggleCamera()
 		RenderScriptCams(false, true, 500, true, true)
 		DestroyCam(Camera)
 		Camera = nil
-		SetFocusEntity(PlayerPedId())
 	else
 		Camera = CreateCam("DEFAULT_SCRIPTED_CAMERA", true)
 		AttachCamToEntity(Camera, RCBoat, 0.0, -1.0, 0.4, true)
 		RenderScriptCams(true, true, 500, true, true)
-		SetFocusEntity(RCBoat)
 	end
 end
 
@@ -398,7 +396,6 @@ Citizen.CreateThread(function()
 				else
 					SetCamRot(Camera, GetEntityRotation(RCBoat))
 				end
-
 			end
 		end
 
@@ -418,6 +415,9 @@ Citizen.CreateThread(function()
 			local rcBoatHealth = GetEntityHealth(RCBoat)
 
 			if not DoesEntityExist(Driver) then
+				Driver = CreateDriver()
+			elseif GetPedInVehicleSeat(RCBoat, -1) ~= Driver then
+				DeletePed(Driver)
 				Driver = CreateDriver()
 			end
 
